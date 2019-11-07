@@ -22,6 +22,7 @@ class StatusBar extends View
 
   initialize: (@statusBarProvider) ->
     @subscriptions = new CompositeDisposable()
+    @closeBtn.hide()
 
     @subscriptions.add atom.commands.add 'atom-workspace',
       'terminus:focus': => @focusTerminal()
@@ -219,6 +220,12 @@ class StatusBar extends View
     @activeTerminal = @terminalViews[index]
     return true
 
+  closeBtnShowHide: ->
+    if @activeTerminal == null
+      @closeBtn.hide()
+    else if @activeTerminal != null
+      @closeBtn.show()
+
   getActiveTerminalView: ->
     return @activeTerminal
 
@@ -257,6 +264,7 @@ class StatusBar extends View
   runNewTerminal: () ->
     @activeTerminal = @createEmptyTerminalView()
     @activeTerminal.toggle()
+    @closeBtn.show()
     return @activeTerminal
 
   runCommandInNewTerminal: (commands) ->
@@ -271,6 +279,7 @@ class StatusBar extends View
 
   setActiveTerminalView: (view) ->
     @activeTerminal = view
+    @closeBtnShowHide()
 
   removeTerminalView: (view) ->
     index = @indexOf view
@@ -288,6 +297,7 @@ class StatusBar extends View
     return true
 
   newTerminalView: ->
+    @closeBtn.show()
     return if @activeTerminal?.animating
 
     @activeTerminal = @createTerminalView()
@@ -311,6 +321,7 @@ class StatusBar extends View
       if view?
         view.destroy()
     @activeTerminal = null
+    @closeBtn.hide()
 
   destroy: ->
     @subscriptions.dispose()
